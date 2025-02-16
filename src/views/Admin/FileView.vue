@@ -1,42 +1,48 @@
 <template>
   <main>
-      <el-table size="large" stripe :data="tableData" style="width: 100%">
-        <el-table-column prop="code" :label="t('admin.fileView.code')" />
-        <el-table-column prop="prefix" :label="t('admin.fileView.prefix')" />
-        <el-table-column prop="suffix" :label="t('admin.fileView.suffix')" />
-        <el-table-column prop="text" :label="t('admin.fileView.text')">
-          <template #default="scope">
-            <span style="width: 6rem;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">{{ scope.row.text }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="used_count" :label="t('admin.fileView.used_count')" />
-        <el-table-column prop="expired_count" :label="t('admin.fileView.expired_count')">
-          <template #default="scope">
-            <span>{{ scope.row.expired_count > -1 ? scope.row.expired_count : t('admin.fileView.unlimited_count') }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="size" :label="t('admin.fileView.size')">
-          <template #default="scope">
-            <span>{{ Math.round(scope.row.size/1024/1024*100)/100 }}MB</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="expired_at" :label="t('admin.fileView.expired_at')">
-          <template #default="scope">
-            <span>{{ scope.row.expired_at ? formatTimestamp(scope.row.expired_at) : t('admin.fileView.forever') }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="file_path" :label="t('admin.fileView.file_path')" />
-        <el-table-column>
-          <template #header>
-            {{ t('admin.fileView.action')}}
-          </template>
-          <template #default="scope">
-            <el-button type="danger" size="small" @click="deleteFile(scope.row.id)">{{ t('admin.fileView.delete') }}</el-button>
-            <el-button type="success" size="small" @click="downloadFile(scope.row.id)" v-if="scope.row.file_path">{{ t('admin.fileView.download') }}</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-pagination @size-change="updatePageSize" @current-change="updateCurrentPage" background layout="prev, pager, next" :page-size="params.size" :page-count="Math.round(params.total/params.size)" :total="params.total" />
+    <el-table size="large" stripe :data="tableData" style="width: 100%">
+      <el-table-column prop="code" :label="t('admin.fileView.code')" />
+      <el-table-column prop="prefix" :label="t('admin.fileView.prefix')" />
+      <el-table-column prop="suffix" :label="t('admin.fileView.suffix')" />
+      <el-table-column prop="text" :label="t('admin.fileView.text')">
+        <template #default="scope">
+          <span style="width: 6rem;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">{{ scope.row.text
+          }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="used_count" :label="t('admin.fileView.used_count')" />
+      <el-table-column prop="expired_count" :label="t('admin.fileView.expired_count')">
+        <template #default="scope">
+          <span>{{ scope.row.expired_count > -1 ? scope.row.expired_count : t('admin.fileView.unlimited_count')
+          }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="size" :label="t('admin.fileView.size')">
+        <template #default="scope">
+          <span>{{ Math.round(scope.row.size / 1024 / 1024 * 100) / 100 }}MB</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="expired_at" :label="t('admin.fileView.expired_at')">
+        <template #default="scope">
+          <span>{{ scope.row.expired_at ? formatTimestamp(scope.row.expired_at) : t('admin.fileView.forever') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="file_path" :label="t('admin.fileView.file_path')" />
+      <el-table-column>
+        <template #header>
+          {{ t('admin.fileView.action') }}
+        </template>
+        <template #default="scope">
+          <el-button type="danger" size="small" @click="deleteFile(scope.row.id)">{{ t('admin.fileView.delete')
+          }}</el-button>
+          <el-button type="success" size="small" @click="downloadFile(scope.row.id)" v-if="scope.row.file_path">{{
+            t('admin.fileView.download') }}</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-pagination @size-change="updatePageSize" @current-change="updateCurrentPage" background
+      layout="prev, pager, next" :page-size="params.size" :page-count="Math.round(params.total / params.size)"
+      :total="params.total" />
   </main>
 </template>
 <script lang="ts" setup>
@@ -80,12 +86,12 @@ const downloadFile = (id: number) => {
     responseType: 'blob'
   }).then((response: any) => {
     const contentDisposition = response.headers['content-disposition'];
-    let filename = 'file';
-    // 使用正则表达式来提取文件名
-    const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-    if (filenameMatch != null && filenameMatch[1]) {
-      // 去除文件名周围的引号
-      filename = filenameMatch[1].replace(/['"]/g, '');
+    let filename = 'default.csv';
+    if (contentDisposition) {
+      const match = contentDisposition.match(/filename\*?=UTF-8''(.+?)(;|$)/);
+      if (match) {
+        filename = decodeURIComponent(match[1]); // 解码 UTF-8 文件名
+      }
     }
     // @ts-ignore
     if (window.showSaveFilePicker)
@@ -129,16 +135,16 @@ async function saveFileByWebApi(fileBlob: Blob, filename: string) {
 }
 
 
-const updatePageSize=(pageSize: number) => {
+const updatePageSize = (pageSize: number) => {
   params.value.size = pageSize;
   refreshData();
 };
-const refreshData=() => {
+const refreshData = () => {
   request({
     url: '/admin/file/list',
     method: 'get',
     params: params.value,
-  }).then((res:any) => {
+  }).then((res: any) => {
     tableData.value = res.detail.data;
     params.value.total = res.detail.total;
   });
