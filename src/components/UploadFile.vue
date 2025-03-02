@@ -39,25 +39,22 @@ const handleOnChangeFileList = (file: any) => {
 };
 
 const handleHttpRequest = (options: any) => {
-  fileBoxStore.showFileBox = true;
   const formData = new FormData();
   if (config.openUpload === 0 && localStorage.getItem('adminPassword') === null) {
-    fileStore.shareData.forEach((file: any) => {
+    fileStore.shareData.forEach((file: any, index: number) => {
       if (file.uid === options.file.uid) {
-        ElMessage.error(t('msg.uploadClose'));
-        file.status = 'fail';
-        file.code = t('msg.fileUploadFail');
+        fileStore.shareData.splice(index, 1);
+        ElMessage.error(t('msg.fileUploadFail'));
         fileStore.save();
       }
     });
     return;
   }
   if (options.file.size > config.uploadSize) {
-    fileStore.shareData.forEach((file: any) => {
+    fileStore.shareData.forEach((file: any, index: number) => {
       if (file.uid === options.file.uid) {
+        fileStore.shareData.splice(index, 1);
         ElMessage.error(t('msg.fileOverSize'));
-        file.status = 'fail';
-        file.code = t('msg.fileOverSize');
         fileStore.save();
       }
     });
@@ -67,20 +64,20 @@ const handleHttpRequest = (options: any) => {
   formData.append('expire_value', props.shareData.expireValue);
   formData.append('expire_style', props.shareData.expireStyle);
   request(
-      {
-        url: "share/file/",
-        method: "post",
-        data: formData,
-        onUploadProgress: (event: any) => {
-          const percentage = Math.round((event.loaded * 100) / event.total) || 0;
-          fileStore.shareData.forEach((file: any) => {
-            if (file.uid === options.file.uid) {
-              file.percentage = percentage;
-              fileStore.save();
-            }
-          });
-        }
+    {
+      url: "share/file/",
+      method: "post",
+      data: formData,
+      onUploadProgress: (event: any) => {
+        const percentage = Math.round((event.loaded * 100) / event.total) || 0;
+        fileStore.shareData.forEach((file: any) => {
+          if (file.uid === options.file.uid) {
+            file.percentage = percentage;
+            fileStore.save();
+          }
+        });
       }
+    }
   ).then((res: any) => {
     const data = res.detail;
     fileStore.shareData.forEach((file: any) => {
@@ -89,14 +86,14 @@ const handleHttpRequest = (options: any) => {
         file.text = data.text;
         file.code = data.code;
         ElMessage.success(t('msg.fileUploadSuccess'));
+        fileBoxStore.showFileBox = true;
         fileStore.save();
       }
     });
   }).catch(() => {
-    fileStore.shareData.forEach((file: any) => {
+    fileStore.shareData.forEach((file: any, index: number) => {
       if (file.uid === options.file.uid) {
-        file.status = 'fail';
-        file.code = t('msg.fileUploadFail');
+        fileStore.shareData.splice(index, 1);
         ElMessage.error(t('msg.fileUploadFail'));
         fileStore.save();
       }
@@ -104,65 +101,57 @@ const handleHttpRequest = (options: any) => {
   });
 };
 function pasteLister(event: any) {
-    const items = event.clipboardData && event.clipboardData.items;
-    if (items && items.length) {
-      for (let i = 0; i < items.length; i++) {
-        if (items[i].kind === 'string') {
-          if (items[i].type.match(/^text\/plain/)) {
-            items[i].getAsString(function(str:any) {
-              console.log(str);
-            });
-          }
-        } else {
-          const file: any = items[i].getAsFile();
-          if (file) {
-            const uid = Date.now();
-            file.uid = uid;
-            fileStore.addShareData({
-              'name': file.name,
-              'text': '',
-              'status': 'ready',
-              'percentage': 0,
-              'size': file.size,
-              'type': file.type,
-              'uid': uid,
-            });
-            handleHttpRequest({
-              file: file,
-            })
+  const items = event.clipboardData && event.clipboardData.items;
+  if (items && items.length) {
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].kind === 'string') {
+        if (items[i].type.match(/^text\/plain/)) {
+          items[i].getAsString(function (str: any) {
+            console.log(str);
+          });
+        }
+      } else {
+        const file: any = items[i].getAsFile();
+        if (file) {
+          const uid = Date.now();
+          file.uid = uid;
+          fileStore.addShareData({
+            'name': file.name,
+            'text': '',
+            'status': 'ready',
+            'percentage': 0,
+            'size': file.size,
+            'type': file.type,
+            'uid': uid,
+          });
+          handleHttpRequest({
+            file: file,
+          })
         }
       }
     }
   }
 }
-onUnmounted(()=>{
+onUnmounted(() => {
   // 清除剪切板事件
   document.removeEventListener('paste', pasteLister);
 })
-onMounted(()=>{
+onMounted(() => {
   document.addEventListener('paste', pasteLister);
 })
 </script>
 
 <template>
   <div>
-    <el-upload
-        class="upload-demo"
-        drag
-        multiple
-        :show-file-list="false"
-        ref="uploadBox"
-        v-model:file-list="fileList"
-        :on-change="handleOnChangeFileList"
-        :http-request="handleHttpRequest"
-    >
+    <el-upload class="upload-demo" drag multiple :show-file-list="false" ref="uploadBox" v-model:file-list="fileList"
+      :on-change="handleOnChangeFileList" :http-request="handleHttpRequest">
       <el-icon class="el-icon--upload">
-        <upload-filled/>
+        <upload-filled />
       </el-icon>
       <div class="el-upload__text">
-        {{t('send.prompt1')}}<em>{{t('send.clickUpload')}}</em>
+        {{ t('send.prompt1') }}<em>{{ t('send.clickUpload') }}</em>
       </div>
-      <div class="el-upload__text" style="font-size: 10px;">{{t('send.prompt2')}}</div>
+      <div class="el-upload__text" style="font-size: 10px;">{{ t('send.prompt2') }}</div>
       <template #tip>
         <div class="el-upload__tip">
         </div>
