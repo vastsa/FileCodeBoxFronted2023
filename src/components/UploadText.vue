@@ -27,7 +27,7 @@ const props = defineProps({
 const handleSubmitShareText = ()=>{
   if (shareText.value === '') {
     ElMessage.warning(t('send.prompt3'));
-  } else if(config.openUpload === 0 && localStorage.getItem('adminPassword') === null){
+  } else if(config.open_upload === 0 && localStorage.getItem('adminPassword') === null){
     ElMessage.error(t('msg.uploadClose'));
   } else {
     const formData = new FormData();
