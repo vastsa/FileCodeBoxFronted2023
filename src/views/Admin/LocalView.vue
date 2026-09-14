@@ -24,7 +24,7 @@
           >
             <template #prepend>
               <el-select v-model="form.expireStyle" :placeholder="t('send.expireStyle')" style="width: 75px">
-                <el-option v-for="item in config.expireStyle" :key="item" :label="t(`send.expireData.${item}`)" :value="item" />
+                <el-option v-for="item in config.expire_style" :key="item" :label="t(`send.expireData.${item}`)" :value="item" />
               </el-select>
             </template>
             <template #append>

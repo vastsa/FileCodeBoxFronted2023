@@ -11,10 +11,10 @@
     </el-form-item>
     <el-form-item size="large" :label="t('admin.settings.themeSelect')" >
       <el-select
-          v-model="config.themesSelect"
+          v-model="config.themes_select"
           style="width: 100%"
       >
-        <el-option v-for="item in config.themesChoices" :label="item.name" :value="item.key" />
+        <el-option v-for="item in config.themes_choices" :label="item.name" :value="item.key" />
       </el-select>
     </el-form-item>
     <el-form-item size="large" :label="t('admin.settings.notify_title')">
@@ -32,14 +32,14 @@
       </span>
     </el-form-item>
     <el-form-item size="large" :label="t('admin.settings.showAdminAddr')">
-      <el-select v-model="config.showAdminAddr" style="width: 80%">
+      <el-select v-model="config.show_admin_addr" style="width: 80%">
         <el-option :label="t('admin.settings.showAdmin.open')" :value="1" />
         <el-option :label="t('admin.settings.showAdmin.close')" :value="0" />
       </el-select>
       <small style="margin-left: 0.4rem">{{ t('admin.settings.showAdmin.note') }}</small>
     </el-form-item>
     <el-form-item size="large" label="robots.Text">
-      <el-input type="textarea" v-model="config.robotsText" placeholder="explain" />
+      <el-input type="textarea" v-model="config.robots_text" placeholder="explain" />
     </el-form-item>
     <el-form-item size="large" :label="t('admin.settings.explain')">
       <el-input type="textarea" v-model="config.page_explain" placeholder="explain" />
@@ -48,7 +48,7 @@
       <el-input type="password" v-model="config.admin_token" />
     </el-form-item>
     <el-form-item size="large" :label="t('admin.settings.uploadSize')">
-      <el-input type="number" v-model="config.uploadSize" />
+      <el-input type="number" v-model="config.upload_size" />
       <template #append></template>
       <small>Bytes：{{ t('admin.settings.uploadSizeNote') }}</small>
     </el-form-item>
@@ -58,7 +58,7 @@
     </el-form-item>
     <el-form-item size="large" :label="t('admin.settings.expireStyle')" >
       <el-select
-          v-model="config.expireStyle"
+          v-model="config.expire_style"
           multiple
           style="width: 100%"
       >
@@ -70,7 +70,7 @@
       </el-select>
     </el-form-item>
     <el-form-item size="large" :label="t('admin.settings.openUpload.title')">
-      <el-select v-model="config.openUpload" style="width: 80%">
+      <el-select v-model="config.open_upload" style="width: 80%">
         <el-option :label="t('admin.settings.openUpload.open')" :value="1" />
         <el-option :label="t('admin.settings.openUpload.close')" :value="0" />
       </el-select>
@@ -112,24 +112,24 @@
     <el-form-item size="large" :label="t('admin.settings.uploadlimit')">
         <span style="display: flex;height: 38px">
           <span style="margin-right: 0.4rem">{{ t('admin.settings.mei') }}</span>
-          <el-input type="number" v-model="config.uploadMinute" />
+          <el-input type="number" v-model="config.upload_minute" />
           <span style="width: 200px;margin-left: 0.4rem">{{ t('admin.settings.minute') }}</span>
         </span>
         <span style="display: flex;height: 38px">
           <span style="width:3rem;margin-right: 0.4rem">{{ t('admin.settings.upload') }}</span>
-          <el-input type="number" v-model="config.uploadCount" />
+          <el-input type="number" v-model="config.upload_count" />
         <span style="width: 200px;margin-left: 0.4rem">{{ t('admin.settings.files') }}</span>
         </span>
     </el-form-item>
     <el-form-item size="large" :label="t('admin.settings.errorlimit')">
         <span style="display: flex;height: 38px">
           <span style="margin-right: 0.4rem">{{ t('admin.settings.mei') }}</span>
-          <el-input type="number" v-model="config.errorMinute" />
+          <el-input type="number" v-model="config.error_minute" />
           <span style="width: 200px;margin-left: 0.4rem">{{ t('admin.settings.minute') }}</span>
         </span>
         <span style="display: flex;height: 38px">
           <span style="width:3rem;margin-right: 0.4rem">{{ t('admin.settings.allow') }}</span>
-          <el-input type="number" v-model="config.errorCount" />
+          <el-input type="number" v-model="config.error_count" />
         <span style="width: 200px;margin-left: 0.4rem">{{ t('admin.settings.errors') }}</span>
         </span>
     </el-form-item>
@@ -151,22 +151,22 @@ const config:any = ref({
   name: '',
   description: '',
   file_storage: '',
-  expireStyle: [],
-  themesChoices: [],
-  themesSelect: '',
+  expire_style: [],
+  themes_choices: [],
+  themes_select: '',
   admin_token: '',
-  robotsText:'',
+  robots_text:'',
   keywords: '',
   notify_title: '',
   notify_content: '',
-  openUpload: 1,
-  uploadSize: 1,
-  uploadMinute: 1,
+  open_upload: 1,
+  upload_size: 1,
+  upload_minute: 1,
   max_save_seconds: 0,
   opacity: 0.9,
   s3_access_key_id: '',
   background: '',
-  showAdminAddr: 0,
+  show_admin_addr: 0,
   page_explain: '',
   s3_secret_access_key: '',
   aws_session_token: '',
@@ -175,9 +175,9 @@ const config:any = ref({
   s3_bucket_name: '',
   s3_endpoint_url: '',
   s3_hostname: '',
-  uploadCount: 1,
-  errorMinute: 1,
-  errorCount: 1,
+  upload_count: 1,
+  error_minute: 1,
+  error_count: 1,
 });
 const refreshData = ()=>{
   request({

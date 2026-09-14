@@ -11,7 +11,7 @@ const { config } = useConfigStore();
 const { t } = useI18n()
 const shareData = ref({
   expireValue: 1,
-  expireStyle: config.expireStyle.length > 0 ? config.expireStyle[0] : 'day',
+  expireStyle: config.expire_style.length > 0 ? config.expire_style[0] : 'day',
   targetType: 'file',
 })
 </script>
@@ -29,7 +29,7 @@ const shareData = ref({
           >
             <template #prepend>
               <el-select v-model="shareData.expireStyle" :placeholder="t('send.expireStyle')" style="width: 75px">
-                <el-option v-for="item in config.expireStyle" :key="item" :label="t(`send.expireData.${item}`)" :value="item" />
+                <el-option v-for="item in config.expire_style" :key="item" :label="t(`send.expireData.${item}`)" :value="item" />
               </el-select>
             </template>
             <template #append>

@@ -40,7 +40,7 @@ const handleOnChangeFileList = (file: any) => {
 
 const handleHttpRequest = (options: any) => {
   const formData = new FormData();
-  if (config.openUpload === 0 && localStorage.getItem('adminPassword') === null) {
+  if (config.open_upload === 0 && localStorage.getItem('adminPassword') === null) {
     fileStore.shareData.forEach((file: any, index: number) => {
       if (file.uid === options.file.uid) {
         fileStore.shareData.splice(index, 1);
@@ -50,7 +50,7 @@ const handleHttpRequest = (options: any) => {
     });
     return;
   }
-  if (options.file.size > config.uploadSize) {
+  if (options.file.size > config.upload_size) {
     fileStore.shareData.forEach((file: any, index: number) => {
       if (file.uid === options.file.uid) {
         fileStore.shareData.splice(index, 1);
