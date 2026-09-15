@@ -1,17 +1,22 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import CardTools from "@/components/CardTools.vue";
 import UploadFile from "@/components/UploadFile.vue";
 import UploadText from "@/components/UploadText.vue";
 import { useI18n } from 'vue-i18n'
 import { useConfigStore } from "@/stores/config";
 
-const { config } = useConfigStore();
+const { config } = useConfigStore()
+
+const expireStyles = computed(() => {
+  const styles = config.expire_style
+  return Array.isArray(styles) && styles.length > 0 ? styles : ['day']
+})
 
 const { t } = useI18n()
 const shareData = ref({
   expireValue: 1,
-  expireStyle: config.expire_style.length > 0 ? config.expire_style[0] : 'day',
+  expireStyle: expireStyles.value[0],
   targetType: 'file',
 })
 </script>
@@ -29,7 +34,7 @@ const shareData = ref({
           >
             <template #prepend>
               <el-select v-model="shareData.expireStyle" :placeholder="t('send.expireStyle')" style="width: 75px">
-                <el-option v-for="item in config.expire_style" :key="item" :label="t(`send.expireData.${item}`)" :value="item" />
+                <el-option v-for="item in expireStyles" :key="item" :label="t(`send.expireData.${item}`)" :value="item" />
               </el-select>
             </template>
             <template #append>

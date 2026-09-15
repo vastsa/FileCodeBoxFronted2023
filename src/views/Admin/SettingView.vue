@@ -14,7 +14,7 @@
           v-model="config.themes_select"
           style="width: 100%"
       >
-        <el-option v-for="item in config.themes_choices" :label="item.name" :value="item.key" />
+        <el-option v-for="item in config.themes_choices" :key="item.key" :label="item.name" :value="item.key" />
       </el-select>
     </el-form-item>
     <el-form-item size="large" :label="t('admin.settings.notify_title')">
@@ -139,7 +139,8 @@
   </el-form>
 </template>
 <script lang="ts" setup>
-import {ref} from "vue";
+import { ref } from "vue";
+import { DEFAULT_EXPIRE_STYLES, DEFAULT_THEME_CHOICES, normalizeConfig } from "@/stores/config";
 import { request } from "@/utils/request";
 import { ElMessage } from "element-plus";
 
@@ -151,8 +152,8 @@ const config:any = ref({
   name: '',
   description: '',
   file_storage: '',
-  expire_style: [],
-  themes_choices: [],
+  expire_style: [...DEFAULT_EXPIRE_STYLES],
+  themes_choices: [...DEFAULT_THEME_CHOICES],
   themes_select: '',
   admin_token: '',
   robots_text:'',
@@ -184,7 +185,7 @@ const refreshData = ()=>{
     url: '/admin/config/get',
     method: 'get'
   }).then((res: any) => {
-    config.value = res.detail;
+    config.value = { ...config.value, ...normalizeConfig(res.detail) };
   });
 }
 refreshData();
